@@ -1,0 +1,35 @@
+﻿@model BigBox_v4.Models.Drivers
+
+@{
+    ViewData["Title"] = "Driver Details";
+}
+
+<div class="container">
+    <h1>Driver Details</h1>
+
+    <div class="card">
+        <div class="card-header">
+            <h5>@Model.Name</h5>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Name)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.Name)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.LicenseNumber)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.LicenseNumber)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.EmploymentDate)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.EmploymentDate)</dd>
+
+                <dt class="col-sm-3">Years of Service</dt>
+                <dd class="col-sm-9">@(DateTime.Now.Year - Model.EmploymentDate.Year)</dd>
+            </dl>
+        </div>
+        <div class="card-footer">
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        </div>
+    </div>
+</div>
+

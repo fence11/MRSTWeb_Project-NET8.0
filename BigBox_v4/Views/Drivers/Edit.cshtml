@@ -1,0 +1,53 @@
+﻿@model BigBox_v4.Models.Drivers
+
+@{
+    ViewData["Title"] = "Edit Driver";
+}
+
+<div class="container">
+    <h1>Edit Driver</h1>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <form asp-action="Edit">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label"></label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="LicenseNumber" class="form-label"></label>
+                            <input asp-for="LicenseNumber" class="form-control" />
+                            <span asp-validation-for="LicenseNumber" class="text-danger"></span>
+                            <small class="form-text text-muted">License number must be at least 5 characters long.</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="EmploymentDate" class="form-label"></label>
+                            <input asp-for="EmploymentDate" class="form-control" type="date" />
+                            <span asp-validation-for="EmploymentDate" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
