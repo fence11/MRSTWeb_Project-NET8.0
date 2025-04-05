@@ -1,0 +1,29 @@
+﻿using BigBox_v4.Models;
+using Microsoft.EntityFrameworkCore;
+
+namespace BigBox_v4.Data
+{
+    public class ApplicationDBContext : DbContext
+    {
+        public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options)
+            : base(options)
+        {
+        }
+    public DbSet<Drivers> Drivers { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Drivers>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.LicenseNumber).IsRequired().HasMaxLength(50);
+                entity.HasIndex(e => e.LicenseNumber).IsUnique();
+            });
+
+        }
+    }
+}
+
