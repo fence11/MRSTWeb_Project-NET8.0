@@ -17,6 +17,9 @@ builder.Services.AddScoped(typeof(IBusinessLogic<>), typeof(BusinessService<>));
 builder.Services.AddScoped<IDriversRepository, DriversRepository>();
 builder.Services.AddScoped<IDriversBusinessLogic, DriversBusinessLogic>();
 
+builder.Services.AddScoped<IDriverScheduleRepository, DriverScheduleRepository>();
+builder.Services.AddScoped<IDriverScheduleBusinessLogic, DriverScheduleBusinessLogic>();
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

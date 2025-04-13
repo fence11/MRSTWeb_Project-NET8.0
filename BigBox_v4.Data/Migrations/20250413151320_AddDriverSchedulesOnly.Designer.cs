@@ -9,21 +9,49 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace BigBox_v4.Migrations
+namespace BigBox_v4.Data.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20250322114332_AddDriversTable")]
-    partial class AddDriversTable
+    [Migration("20250413151320_AddDriverSchedulesOnly")]
+    partial class AddDriverSchedulesOnly
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.1")
+                .HasAnnotation("ProductVersion", "8.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
+
+            modelBuilder.Entity("BigBox_v4.Domain.DriverSchedule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DriverId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DriverId");
+
+                    b.ToTable("DriverSchedules");
+                });
 
             modelBuilder.Entity("BigBox_v4.Models.Drivers", b =>
                 {
@@ -48,7 +76,21 @@ namespace BigBox_v4.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("LicenseNumber")
+                        .IsUnique();
+
                     b.ToTable("Drivers");
+                });
+
+            modelBuilder.Entity("BigBox_v4.Domain.DriverSchedule", b =>
+                {
+                    b.HasOne("BigBox_v4.Models.Drivers", "Driver")
+                        .WithMany()
+                        .HasForeignKey("DriverId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Driver");
                 });
 #pragma warning restore 612, 618
         }

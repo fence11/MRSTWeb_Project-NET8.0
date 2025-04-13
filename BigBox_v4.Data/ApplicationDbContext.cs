@@ -1,4 +1,5 @@
-﻿using BigBox_v4.Models;
+﻿using BigBox_v4.Domain;
+using BigBox_v4.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace BigBox_v4.Data
@@ -10,6 +11,7 @@ namespace BigBox_v4.Data
         {
         }
     public DbSet<Drivers> Drivers { get; set; }
+    public DbSet<DriverSchedule> DriverSchedules { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -23,6 +25,14 @@ namespace BigBox_v4.Data
                 entity.HasIndex(e => e.LicenseNumber).IsUnique();
             });
 
+            modelBuilder.Entity<DriverSchedule>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.HasOne(e => e.Driver)
+                      .WithMany()
+                      .HasForeignKey(e => e.DriverId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
         }
     }
 }

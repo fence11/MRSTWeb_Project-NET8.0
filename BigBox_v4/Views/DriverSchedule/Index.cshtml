@@ -1,0 +1,65 @@
+﻿@model IEnumerable<BigBox_v4.Domain.DriverSchedule>
+
+@{
+    ViewData["Title"] = "Driver Schedules";
+}
+
+<div class="container">
+    <h1>Driver Schedules</h1>
+    <p>
+        <a asp-action="Create" class="btn btn-success">Create New Schedule</a>
+    </p>
+
+    <div class="row mb-3">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Schedule List</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model == null || !Model.Any())
+                    {
+                        <div class="alert alert-info">
+                            No schedules found.
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Driver</th>
+                                        <th>Start Time</th>
+                                        <th>End Time</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var schedule in Model.OrderBy(s => s.StartTime))
+                                    {
+                                        <tr>
+                                            <td>@schedule.Driver?.Name</td>
+                                            <td>@schedule.StartTime.ToString("dddd, MMM d yyyy h:mm tt")</td>
+                                            <td>@schedule.EndTime.ToString("dddd, MMM d yyyy h:mm tt")</td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <a asp-action="Edit" asp-route-id="@schedule.Id" class="btn btn-primary btn-sm">Edit</a>
+                                                    <a asp-action="Delete" asp-route-id="@schedule.Id" class="btn btn-danger btn-sm">Delete</a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Back to Home</a>
+    </div>
+</div>
