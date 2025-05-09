@@ -10,8 +10,8 @@ namespace BigBox_v4.Data
             : base(options)
         {
         }
-    public DbSet<Drivers> Drivers { get; set; }
-    public DbSet<DriverSchedule> DriverSchedules { get; set; }
+        public DbSet<Drivers> Drivers { get; set; }
+        public DbSet<DriverSchedule> DriverSchedules { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -34,6 +34,8 @@ namespace BigBox_v4.Data
                       .OnDelete(DeleteBehavior.Cascade);
             });
         }
-    }
-}
+    public DbSet<User> Users { get; set; }
 
+    }
+
+}
