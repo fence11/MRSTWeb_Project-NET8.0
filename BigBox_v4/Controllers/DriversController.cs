@@ -9,10 +9,14 @@ namespace BigBox_v4.Controllers
     public class DriversController : Controller
     {
         private readonly IDriversBusinessLogic _driversBusinessLogic;
+        private readonly IDriverScheduleBusinessLogic _scheduleBusinessLogic;
 
-        public DriversController(IDriversBusinessLogic driversBusinessLogic)
+        public DriversController(
+            IDriversBusinessLogic driversBusinessLogic,
+            IDriverScheduleBusinessLogic scheduleBusinessLogic)
         {
             _driversBusinessLogic = driversBusinessLogic;
+            _scheduleBusinessLogic = scheduleBusinessLogic;
         }
 
         public async Task<IActionResult> Index()
@@ -28,6 +32,9 @@ namespace BigBox_v4.Controllers
             {
                 return NotFound();
             }
+
+            ViewBag.UpcomingSchedules = await _scheduleBusinessLogic.GetUpcomingSchedulesAsync(id);
+
             return View(driver);
         }
 

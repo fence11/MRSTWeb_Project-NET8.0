@@ -1,5 +1,101 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model IEnumerable<BigBox_v4.Domain.DriverSchedule>
+
 @{
+    ViewData["Title"] = "Driver Timetable";
+    var driver = ViewBag.Driver as BigBox_v4.Models.Drivers;
+    var groupedSchedules = Model.GroupBy(s => s.StartTime.Date);
 }
+
+<div class="container">
+    <h1>Timetable for @driver.Name</h1>
+    <p>
+        <a asp-action="Create" asp-route-driverId="@driver.Id" asp-route-returnToDriver="true" class="btn btn-success">Add Schedule</a>
+    </p>
+
+    <div class="row mb-3">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Driver Information</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-3">Name</dt>
+                        <dd class="col-sm-9">@driver.Name</dd>
+
+                        <dt class="col-sm-3">License Number</dt>
+                        <dd class="col-sm-9">@driver.LicenseNumber</dd>
+
+                        <dt class="col-sm-3">Employment Date</dt>
+                        <dd class="col-sm-9">@driver.EmploymentDate.ToString("d")</dd>
+
+                        <dt class="col-sm-3">Years of Service</dt>
+                        <dd class="col-sm-9">@(DateTime.Now.Year - driver.EmploymentDate.Year)</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Upcoming Schedule</h5>
+                </div>
+                <div class="card-body">
+                    @if (!Model.Any())
+                    {
+                        <div class="alert alert-info">
+                            No schedules found for this driver.
+                        </div>
+                    }
+                    else
+                    {
+                        @foreach (var dayGroup in groupedSchedules)
+                        {
+                            <h5 class="mt-3">@dayGroup.Key.ToString("dddd, MMMM d, yyyy")</h5>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Start Time</th>
+                                            <th>End Time</th>
+                                            <th>Duration</th>
+                                            <th>Status</th>
+                                            <th>Notes</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var schedule in dayGroup.OrderBy(s => s.StartTime))
+                                        {
+                                            <tr>
+                                                <td>@schedule.StartTime.ToString("h:mm tt")</td>
+                                                <td>@schedule.EndTime.ToString("h:mm tt")</td>
+                                                <td>@schedule.Duration.ToString(@"hh\:mm")</td>
+                                                <td>@schedule.Status</td>
+                                                <td>@(string.IsNullOrEmpty(schedule.Notes) ? "N/A" : schedule.Notes)</td>
+                                                <td>
+                                                    <div class="btn-group" role="group">
+                                                        <a asp-action="Edit" asp-route-id="@schedule.Id" asp-route-returnToDriver="true" class="btn btn-primary btn-sm">Edit</a>
+                                                        <a asp-action="Delete" asp-route-id="@schedule.Id" asp-route-returnToDriver="true" class="btn btn-danger btn-sm">Delete</a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a asp-controller="Drivers" asp-action="Details" asp-route-id="@driver.Id" class="btn btn-secondary">Back to Driver Details</a>
+        <a asp-controller="Drivers" asp-action="Index" class="btn btn-secondary">Back to Drivers List</a>
+    </div>
+</div>

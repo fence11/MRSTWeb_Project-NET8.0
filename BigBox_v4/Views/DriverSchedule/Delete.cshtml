@@ -1,5 +1,54 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model BigBox_v4.Domain.DriverSchedule
+
 @{
+    ViewData["Title"] = "Delete Schedule";
 }
+
+<div class="container">
+    <h1>Delete Schedule</h1>
+
+    <div class="alert alert-danger">
+        <h3>Are you sure you want to delete this schedule?</h3>
+        <p>This action cannot be undone.</p>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Schedule Details</h5>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Driver</dt>
+                <dd class="col-sm-9">@(Model.Driver?.Name ?? "Unknown")</dd>
+
+                <dt class="col-sm-3">Start Time</dt>
+                <dd class="col-sm-9">@Model.StartTime.ToString("g")</dd>
+
+                <dt class="col-sm-3">End Time</dt>
+                <dd class="col-sm-9">@Model.EndTime.ToString("g")</dd>
+
+                <dt class="col-sm-3">Duration</dt>
+                <dd class="col-sm-9">@Model.Duration.ToString(@"hh\:mm")</dd>
+
+                <dt class="col-sm-3">Status</dt>
+                <dd class="col-sm-9">@Model.Status</dd>
+
+                <dt class="col-sm-3">Notes</dt>
+                <dd class="col-sm-9">@(string.IsNullOrEmpty(Model.Notes) ? "N/A" : Model.Notes)</dd>
+            </dl>
+        </div>
+    </div>
+
+    <form asp-action="Delete" asp-route-returnToDriver="@Context.Request.Query["returnToDriver"]">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="btn btn-danger">Delete</button>
+        @if (Context.Request.Query.ContainsKey("returnToDriver"))
+        {
+            <a asp-action="DriverTimetable" asp-route-id="@Model.DriverId" class="btn btn-secondary">Back to Timetable</a>
+        }
+        else
+        {
+            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        }
+    </form>
+</div>
