@@ -1,4 +1,6 @@
-﻿namespace BigBox_v4.Domain
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace BigBox_v4.Domain
 {
     public class User
     {
@@ -6,7 +8,13 @@
 
         public string Username { get; set; } = string.Empty;
 
-        public string RealName { get; set; } = string.Empty;
+        [Required]
+        [MaxLength(50)]
+        public string FirstName { get; set; } = "";
+
+        [Required]
+        [MaxLength(50)]
+        public string LastName { get; set; } = "";
 
         public string Email { get; set; } = string.Empty;
 

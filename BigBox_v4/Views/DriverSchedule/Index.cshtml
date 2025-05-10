@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Driver Schedules";
+    var groupedSchedules = Model.GroupBy(s => s.StartTime.Date);
 }
 
 <div class="container">
@@ -10,49 +11,65 @@
         <a asp-action="Create" class="btn btn-success">Create New Schedule</a>
     </p>
 
+    @* https://localhost:7064/DriverSchedule/DriverTimetable/1 *@
+
+
     <div class="row mb-3">
         <div class="col">
             <div class="card">
                 <div class="card-header">
-                    <h5>Schedule List</h5>
+                    <h5>Weekly Schedule</h5>
                 </div>
                 <div class="card-body">
-                    @if (Model == null || !Model.Any())
+                    @if (!Model.Any())
                     {
                         <div class="alert alert-info">
-                            No schedules found.
+                            No schedules found for the current week.
                         </div>
                     }
                     else
                     {
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Driver</th>
-                                        <th>Start Time</th>
-                                        <th>End Time</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var schedule in Model.OrderBy(s => s.StartTime))
-                                    {
+                        @foreach (var dayGroup in groupedSchedules)
+                        {
+                            <h5 class="mt-3">@dayGroup.Key.ToString("dddd, MMMM d, yyyy")</h5>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
                                         <tr>
-                                            <td>@schedule.Driver?.Name</td>
-                                            <td>@schedule.StartTime.ToString("dddd, MMM d yyyy h:mm tt")</td>
-                                            <td>@schedule.EndTime.ToString("dddd, MMM d yyyy h:mm tt")</td>
-                                            <td>
-                                                <div class="btn-group" role="group">
-                                                    <a asp-action="Edit" asp-route-id="@schedule.Id" class="btn btn-primary btn-sm">Edit</a>
-                                                    <a asp-action="Delete" asp-route-id="@schedule.Id" class="btn btn-danger btn-sm">Delete</a>
-                                                </div>
-                                            </td>
+                                            <th>Driver</th>
+                                            <th>Start Time</th>
+                                            <th>End Time</th>
+                                            <th>Duration</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
                                         </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var schedule in dayGroup.OrderBy(s => s.StartTime))
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @(schedule.Driver?.Name ?? "Unknown")
+                                                    <a asp-controller="DriverSchedule" asp-action="DriverTimetable" asp-route-id="@schedule.DriverId">
+                                                        <img src="~/images/MaterialSymbolsLightOpenInNew.svg" alt="View" width="16" height="16" />
+                                                    </a>
+                                                </td>
+                                                <td>@schedule.StartTime.ToString("h:mm tt")</td>
+                                                <td>@schedule.EndTime.ToString("h:mm tt")</td>
+                                                <td>@schedule.Duration.ToString(@"hh\:mm")</td>
+                                                <td>@schedule.Status</td>
+                                                <td>
+                                                    <div class="btn-group" role="group">
+                                                        <a asp-action="Edit" asp-route-id="@schedule.Id" class="btn btn-primary btn-sm">Edit</a>
+                                                        <a asp-action="Delete" asp-route-id="@schedule.Id" class="btn btn-danger btn-sm">Delete</a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
                     }
                 </div>
             </div>

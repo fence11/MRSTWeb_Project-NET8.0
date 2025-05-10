@@ -11,20 +11,30 @@
         <input asp-for="Username" />
         <span asp-validation-for="Username"></span>
     </div>
+
     <div>
-        <label asp-for="RealName"></label>
-        <input asp-for="RealName" />
-        <span asp-validation-for="RealName"></span>
+        <label asp-for="FirstName"></label>
+        <input asp-for="FirstName" />
+        <span asp-validation-for="FirstName"></span>
     </div>
+
+    <div>
+        <label asp-for="LastName"></label>
+        <input asp-for="LastName" />
+        <span asp-validation-for="LastName"></span>
+    </div>
+
     <div>
         <label asp-for="Email"></label>
         <input asp-for="Email" type="email" />
         <span asp-validation-for="Email"></span>
     </div>
+
     <div>
         <label>Password</label>
         <input name="PasswordHash" type="password" />
     </div>
+
     <button type="submit">Register</button>
 </form>
 
