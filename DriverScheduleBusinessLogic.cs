@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BigBox_v4.Domain;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BigBox_v4.BusinessLogic
 {
@@ -22,9 +21,13 @@ namespace BigBox_v4.BusinessLogic
             if (driverId <= 0)
                 throw new ArgumentException("Invalid driver ID", nameof(driverId));
 
-            return await _scheduleRepository.GetSchedulesByDriverIdAsync(driverId);
+            // Fetch schedules for the given driver ID
+            var schedules = await _scheduleRepository.GetSchedulesByDriverIdAsync(driverId);
+
+            // Return the fetched schedules
+            return schedules;
         }
-        
+
         public async Task<IEnumerable<DriverSchedule>> GetSchedulesForWeekAsync(DateTime weekStartDate)
         {
             // `weekStartDate.Date` strips the time portion, therefore startDate starts at 00:00:00 of the specified date.
@@ -47,7 +50,6 @@ namespace BigBox_v4.BusinessLogic
 
         public async Task<bool> IsScheduleValidAsync(DriverSchedule schedule)
         {
-
             if (schedule == null)
                 throw new ArgumentNullException(nameof(schedule));
 
