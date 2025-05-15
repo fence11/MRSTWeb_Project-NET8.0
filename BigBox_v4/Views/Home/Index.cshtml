@@ -3,10 +3,24 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Welcome to BigBox Shipping</h1>
+    <p>Your trusted partner for all your shipping needs.</p>
 
-    <div class="test">Test CSS Class 2316</div>
+    <div class="mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-lg">
+                    <div class="card-body text-center p-5">
+                        <h2 class="mb-4">Ready to Ship?</h2>
+                        <p class="lead mb-4">Start the shipping process by entering your box details.</p>
+                        <a asp-controller="BoxDetails" asp-action="Index" class="btn btn-primary btn-lg px-5 py-3">
+                            <i class="bi bi-box-seam me-2"></i> Start Shipping
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="mt-4">
         <h2>Application Features</h2>

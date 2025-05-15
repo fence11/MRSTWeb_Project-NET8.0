@@ -1,0 +1,24 @@
+﻿@{
+    ViewData["Title"] = "Shipping Successful";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card text-center">
+                <div class="card-body py-5">
+                    <div class="mb-4">
+                        <i class="bi bi-check-circle text-success" style="font-size: 5rem;"></i>
+                    </div>
+                    <h1 class="card-title">Shipping Request Successful!</h1>
+                    <p class="card-text lead">Your shipping request has been successfully submitted and is now being processed.</p>
+
+                    <div class="mt-5">
+                        <a asp-controller="BoxDetails" asp-action="Index" class="btn btn-primary me-2">Ship Another Box</a>
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Return to Home</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

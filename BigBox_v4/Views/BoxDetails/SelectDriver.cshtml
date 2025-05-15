@@ -1,0 +1,177 @@
+﻿@model BigBox_v4.Domain.Box
+
+@{
+    ViewData["Title"] = "Select Driver";
+    var drivers = ViewBag.Drivers as List<BigBox_v4.Models.Drivers>;
+}
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">Step 2 of 4</div>
+            </div>
+        </div>
+    </div>
+
+    <h1>Select a Driver</h1>
+    <p class="lead">Choose a driver based on their availability and schedule.</p>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <form asp-action="SelectDriver" method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Available Drivers</label>
+
+                            @if (drivers == null || !drivers.Any())
+                            {
+                                <div class="alert alert-warning">
+                                    No drivers are currently available.
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="list-group">
+                                    @foreach (var driver in drivers)
+                                    {
+                                        var schedules = ViewData[$"Schedules_{driver.Id}"] as IEnumerable<BigBox_v4.Domain.DriverSchedule>;
+
+                                        <div class="list-group-item list-group-item-action">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <div>
+                                                    <h5 class="mb-1">@driver.Name</h5>
+                                                    <p class="mb-1">License: @driver.LicenseNumber</p>
+                                                    <p class="mb-1">Experience: @(DateTime.Now.Year - driver.EmploymentDate.Year) years</p>
+                                                </div>
+                                                <div>
+                                                    <button type="submit" name="driverId" value="@driver.Id" class="btn btn-primary">Select</button>
+                                                </div>
+                                            </div>
+
+                                            @if (schedules != null && schedules.Any())
+                                            {
+                                                <div class="mt-2">
+                                                    <h6>Upcoming Schedule:</h6>
+                                                    <ul class="list-unstyled">
+                                                        @foreach (var schedule in schedules.Take(3))
+                                                        {
+                                                            <li>
+                                                                <small>
+                                                                    @schedule.StartTime.ToString("MMM dd, yyyy") -
+                                                                    @schedule.StartTime.ToString("h:mm tt") to @schedule.EndTime.ToString("h:mm tt")
+                                                                </small>
+                                                            </li>
+                                                        }
+                                                    </ul>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <p class="text-muted mt-2"><small>No upcoming schedules</small></p>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+
+                        <div class="mt-4">
+                            <a asp-action="Index" class="btn btn-secondary">Back</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Shipping Process</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <strong>1. Enter Box Details</strong>
+                            <p class="small mb-0">Select box size and special handling instructions</p>
+                        </li>
+                        <li class="list-group-item active">
+                            <strong>2. Select Driver</strong>
+                            <p class="small mb-0">Choose a driver based on their schedule</p>
+                        </li>
+                        <li class="list-group-item text-muted">
+                            <strong>3. Select Truck</strong>
+                            <p class="small mb-0">Choose an available truck</p>
+                        </li>
+                        <li class="list-group-item text-muted">
+                            <strong>4. Confirm Details</strong>
+                            <p class="small mb-0">Review and confirm your shipping details</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5>Box Details</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt>Dimensions:</dt>
+                        <dd>@Model.Width.ToString("F2") × @Model.Height.ToString("F2") × @Model.Length.ToString("F2") cm</dd>
+
+                        <dt class="col-sm-5">Weight:</dt>
+                        <dd class="col-sm-7">@Model.Weight kg</dd>
+
+                        @if (Model.Fragile || Model.HandleWithCare || Model.KeepDry || Model.ThisWayUp ||
+                        Model.KeepUpright || Model.Perishable || Model.DoNotStack ||
+                        Model.Flammable || Model.Explosive)
+                        {
+                            <dt class="col-sm-5">Instructions:</dt>
+                            <dd class="col-sm-7">
+                                <ul class="list-unstyled mb-0">
+                                    @if (Model.Fragile)
+                                    {
+                                        <li><small>Fragile</small></li>
+                                    }
+                                    @if (Model.HandleWithCare)
+                                    {
+                                        <li><small>Handle With Care</small></li>
+                                    }
+                                    @if (Model.KeepDry)
+                                    {
+                                        <li><small>Keep Dry</small></li>
+                                    }
+                                    @if (Model.ThisWayUp)
+                                    {
+                                        <li><small>This Way Up</small></li>
+                                    }
+                                    @if (Model.KeepUpright)
+                                    {
+                                        <li><small>Keep Upright</small></li>
+                                    }
+                                    @if (Model.Perishable)
+                                    {
+                                        <li><small>Perishable</small></li>
+                                    }
+                                    @if (Model.DoNotStack)
+                                    {
+                                        <li><small>Do Not Stack</small></li>
+                                    }
+                                    @if (Model.Flammable)
+                                    {
+                                        <li><small>Flammable</small></li>
+                                    }
+                                    @if (Model.Explosive)
+                                    {
+                                        <li><small>Explosive</small></li>
+                                    }
+                                </ul>
+                            </dd>
+                        }
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

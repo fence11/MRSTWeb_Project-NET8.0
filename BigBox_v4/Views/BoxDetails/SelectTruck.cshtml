@@ -1,0 +1,168 @@
+﻿@model BigBox_v4.Domain.Box
+
+@{
+    ViewData["Title"] = "Select Truck";
+    var trucks = ViewBag.Trucks as List<BigBox_v4.Domain.Truck>;
+}
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">Step 3 of 4</div>
+            </div>
+        </div>
+    </div>
+
+    <h1>Select a Truck</h1>
+    <p class="lead">Choose an available truck for your shipment.</p>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <form asp-action="SelectTruck" method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Available Trucks</label>
+
+                            @if (trucks == null || !trucks.Any())
+                            {
+                                <div class="alert alert-warning">
+                                    No trucks are currently available.
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="list-group">
+                                    @foreach (var truck in trucks)
+                                    {
+                                        <div class="list-group-item list-group-item-action">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <div>
+                                                    <h5 class="mb-1">@truck.TruckBrand</h5>
+                                                    <p class="mb-1">
+                                                        License: @(string.IsNullOrEmpty(truck.LicensePlate) ? "N/A" : truck.LicensePlate)
+                                                    </p>
+                                                    <p class="mb-1">
+                                                        Status: <span class="badge @(truck.TruckState == "Idle" ? "bg-success" : "bg-warning")">@truck.TruckState</span>
+                                                    </p>
+                                                    @if (truck.MaxLoadCapacity.HasValue)
+                                                    {
+                                                        <p class="mb-1">Max Load: @truck.MaxLoadCapacity kg</p>
+                                                    }
+                                                    @if (truck.TowWidth.HasValue && truck.TowHeight.HasValue && truck.TowLength.HasValue)
+                                                    {
+                                                        <p class="mb-1">Dimensions: @truck.TowWidth × @truck.TowHeight × @truck.TowLength</p>
+                                                    }
+                                                </div>
+                                                <div>
+                                                    <button type="submit" name="truckId" value="@truck.TruckID" class="btn btn-primary">Select</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+
+                        <div class="mt-4">
+                            <a asp-action="SelectDriver" class="btn btn-secondary">Back</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Shipping Process</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <strong>1. Enter Box Details</strong>
+                            <p class="small mb-0">Select box size and special handling instructions</p>
+                        </li>
+                        <li class="list-group-item">
+                            <strong>2. Select Driver</strong>
+                            <p class="small mb-0">Choose a driver based on their schedule</p>
+                        </li>
+                        <li class="list-group-item active">
+                            <strong>3. Select Truck</strong>
+                            <p class="small mb-0">Choose an available truck</p>
+                        </li>
+                        <li class="list-group-item text-muted">
+                            <strong>4. Confirm Details</strong>
+                            <p class="small mb-0">Review and confirm your shipping details</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5>Box Details</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt>Dimensions:</dt>
+                        <dd>@Model.Width.ToString("F2") × @Model.Height.ToString("F2") × @Model.Length.ToString("F2") cm</dd>
+
+                        <dt class="col-sm-5">Weight:</dt>
+                        <dd class="col-sm-7">@Model.Weight kg</dd>
+
+                        <dt class="col-sm-5">Driver:</dt>
+                        <dd class="col-sm-7">@(Model.Driver?.Name ?? "Not selected")</dd>
+
+                        @if (Model.Fragile || Model.HandleWithCare || Model.KeepDry || Model.ThisWayUp ||
+                        Model.KeepUpright || Model.Perishable || Model.DoNotStack ||
+                        Model.Flammable || Model.Explosive)
+                        {
+                            <dt class="col-sm-5">Instructions:</dt>
+                            <dd class="col-sm-7">
+                                <ul class="list-unstyled mb-0">
+                                    @if (Model.Fragile)
+                                    {
+                                        <li><small>Fragile</small></li>
+                                    }
+                                    @if (Model.HandleWithCare)
+                                    {
+                                        <li><small>Handle With Care</small></li>
+                                    }
+                                    @if (Model.KeepDry)
+                                    {
+                                        <li><small>Keep Dry</small></li>
+                                    }
+                                    @if (Model.ThisWayUp)
+                                    {
+                                        <li><small>This Way Up</small></li>
+                                    }
+                                    @if (Model.KeepUpright)
+                                    {
+                                        <li><small>Keep Upright</small></li>
+                                    }
+                                    @if (Model.Perishable)
+                                    {
+                                        <li><small>Perishable</small></li>
+                                    }
+                                    @if (Model.DoNotStack)
+                                    {
+                                        <li><small>Do Not Stack</small></li>
+                                    }
+                                    @if (Model.Flammable)
+                                    {
+                                        <li><small>Flammable</small></li>
+                                    }
+                                    @if (Model.Explosive)
+                                    {
+                                        <li><small>Explosive</small></li>
+                                    }
+                                </ul>
+                            </dd>
+                        }
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

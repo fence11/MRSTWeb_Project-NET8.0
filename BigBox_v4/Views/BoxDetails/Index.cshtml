@@ -1,0 +1,141 @@
+﻿@model BigBox_v4.Domain.Box
+
+@{
+    ViewData["Title"] = "Box Details";
+}
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">Step 1 of 4</div>
+            </div>
+        </div>
+    </div>
+
+    <h1>Enter Box Details</h1>
+    <p class="lead">Select a box size and provide additional information about your shipment.</p>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <form asp-action="Index" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Box Size</label>
+                            <select name="boxSizeId" class="form-select" required>
+                                <option value="">-- Select Box Size --</option>
+                                @foreach (var item in ViewBag.BoxSizes)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Weight" class="form-label"></label>
+                            <input asp-for="Weight" class="form-control" required />
+                            <span asp-validation-for="Weight" class="text-danger"></span>
+                        </div>
+
+                        <h4 class="mt-4">Additional Instructions</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check mb-2">
+                                    <input asp-for="ThisWayUp" class="form-check-input" />
+                                    <label asp-for="ThisWayUp" class="form-check-label"></label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input asp-for="Fragile" class="form-check-input" />
+                                    <label asp-for="Fragile" class="form-check-label"></label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input asp-for="HandleWithCare" class="form-check-input" />
+                                    <label asp-for="HandleWithCare" class="form-check-label"></label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input asp-for="KeepDry" class="form-check-input" />
+                                    <label asp-for="KeepDry" class="form-check-label"></label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input asp-for="KeepUpright" class="form-check-input" />
+                                    <label asp-for="KeepUpright" class="form-check-label"></label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check mb-2">
+                                    <input asp-for="Perishable" class="form-check-input" />
+                                    <label asp-for="Perishable" class="form-check-label"></label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input asp-for="DoNotStack" class="form-check-input" />
+                                    <label asp-for="DoNotStack" class="form-check-label"></label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input asp-for="Flammable" class="form-check-input" />
+                                    <label asp-for="Flammable" class="form-check-label"></label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input asp-for="Explosive" class="form-check-input" />
+                                    <label asp-for="Explosive" class="form-check-label"></label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 mt-3">
+                            <label asp-for="DoNotOpenBeforeDate" class="form-label"></label>
+                            <input asp-for="DoNotOpenBeforeDate" class="form-control" type="date" />
+                            <span asp-validation-for="DoNotOpenBeforeDate" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="AdditionalNotes" class="form-label"></label>
+                            <textarea asp-for="AdditionalNotes" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="AdditionalNotes" class="text-danger"></span>
+                        </div>
+
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary">Next</button>
+                            <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Shipping Process</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item active">
+                            <strong>1. Enter Box Details</strong>
+                            <p class="small mb-0">Select box size and special handling instructions</p>
+                        </li>
+                        <li class="list-group-item text-muted">
+                            <strong>2. Select Driver</strong>
+                            <p class="small mb-0">Choose a driver based on their schedule</p>
+                        </li>
+                        <li class="list-group-item text-muted">
+                            <strong>3. Select Truck</strong>
+                            <p class="small mb-0">Choose an available truck</p>
+                        </li>
+                        <li class="list-group-item text-muted">
+                            <strong>4. Confirm Details</strong>
+                            <p class="small mb-0">Review and confirm your shipping details</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

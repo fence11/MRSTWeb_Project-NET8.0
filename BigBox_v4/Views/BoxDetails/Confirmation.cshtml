@@ -1,0 +1,213 @@
+﻿@model BigBox_v4.Domain.Box
+
+@{
+    ViewData["Title"] = "Confirm Shipping Details";
+    var driver = ViewBag.Driver as BigBox_v4.Models.Drivers;
+    var truck = ViewBag.Truck as BigBox_v4.Domain.Truck;
+}
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">Step 4 of 4</div>
+            </div>
+        </div>
+    </div>
+
+    <h1>Confirm Shipping Details</h1>
+    <p class="lead">Please review your shipping details before finalizing.</p>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Box Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <dl>
+                                <dt>Dimensions:</dt>
+                                <dd>@Model.Width.ToString("F2") × @Model.Height.ToString("F2") × @Model.Length.ToString("F2") cm</dd>
+
+                                <dt>Weight</dt>
+                                <dd>@Model.Weight kg</dd>
+
+                                @if (Model.DoNotOpenBeforeDate.HasValue)
+                                {
+                                    <dt>Do Not Open Before</dt>
+                                    <dd>@Model.DoNotOpenBeforeDate.Value.ToString("d")</dd>
+                                }
+
+                                @if (!string.IsNullOrEmpty(Model.AdditionalNotes))
+                                {
+                                    <dt>Additional Notes</dt>
+                                    <dd>@Model.AdditionalNotes</dd>
+                                }
+                            </dl>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Special Handling Instructions</h6>
+                            <ul class="list-unstyled">
+                                @if (Model.ThisWayUp)
+                                {
+                                    <li><i class="bi bi-arrow-up-circle"></i> This Way Up</li>
+                                }
+                                @if (Model.Fragile)
+                                {
+                                    <li><i class="bi bi-exclamation-triangle"></i> Fragile</li>
+                                }
+                                @if (Model.HandleWithCare)
+                                {
+                                    <li><i class="bi bi-hand-thumbs-up"></i> Handle With Care</li>
+                                }
+                                @if (Model.KeepDry)
+                                {
+                                    <li><i class="bi bi-umbrella"></i> Keep Dry</li>
+                                }
+                                @if (Model.KeepUpright)
+                                {
+                                    <li><i class="bi bi-arrow-up"></i> Keep Upright</li>
+                                }
+                                @if (Model.Perishable)
+                                {
+                                    <li><i class="bi bi-clock"></i> Perishable</li>
+                                }
+                                @if (Model.DoNotStack)
+                                {
+                                    <li><i class="bi bi-layers"></i> Do Not Stack</li>
+                                }
+                                @if (Model.Flammable)
+                                {
+                                    <li><i class="bi bi-fire"></i> Flammable</li>
+                                }
+                                @if (Model.Explosive)
+                                {
+                                    <li><i class="bi bi-exclamation-octagon"></i> Explosive</li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5>Driver Details</h5>
+                        </div>
+                        <div class="card-body">
+                            @if (driver != null)
+                            {
+                                <dl>
+                                    <dt>Name</dt>
+                                    <dd>@driver.Name</dd>
+
+                                    <dt>License Number</dt>
+                                    <dd>@driver.LicenseNumber</dd>
+
+                                    <dt>Experience</dt>
+                                    <dd>@(DateTime.Now.Year - driver.EmploymentDate.Year) years</dd>
+                                </dl>
+                            }
+                            else
+                            {
+                                <p class="text-danger">No driver selected</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5>Truck Details</h5>
+                        </div>
+                        <div class="card-body">
+                            @if (truck != null)
+                            {
+                                <dl>
+                                    <dt>Brand</dt>
+                                    <dd>@truck.TruckBrand</dd>
+
+                                    <dt>License Plate</dt>
+                                    <dd>@(string.IsNullOrEmpty(truck.LicensePlate) ? "N/A" : truck.LicensePlate)</dd>
+
+                                    <dt>Status</dt>
+                                    <dd>
+                                        <span class="badge @(truck.TruckState == "Idle" ? "bg-success" : "bg-warning")">
+                                            @truck.TruckState
+                                        </span>
+                                    </dd>
+
+                                    @if (truck.MaxLoadCapacity.HasValue)
+                                    {
+                                        <dt>Max Load</dt>
+                                        <dd>@truck.MaxLoadCapacity kg</dd>
+                                    }
+                                </dl>
+                            }
+                            else
+                            {
+                                <p class="text-danger">No truck selected</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <form asp-action="Confirmation" method="post">
+                <div class="d-flex justify-content-between">
+                    <a asp-action="SelectTruck" class="btn btn-secondary">Back</a>
+                    <div>
+                        <button type="submit" name="action" value="Finish" class="btn btn-success">Finish</button>
+                        <button type="submit" name="action" value="ChooseAnother" class="btn btn-primary">Choose Another Box</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Shipping Process</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <strong>1. Enter Box Details</strong>
+                            <p class="small mb-0">Select box size and special handling instructions</p>
+                        </li>
+                        <li class="list-group-item">
+                            <strong>2. Select Driver</strong>
+                            <p class="small mb-0">Choose a driver based on their schedule</p>
+                        </li>
+                        <li class="list-group-item">
+                            <strong>3. Select Truck</strong>
+                            <p class="small mb-0">Choose an available truck</p>
+                        </li>
+                        <li class="list-group-item active">
+                            <strong>4. Confirm Details</strong>
+                            <p class="small mb-0">Review and confirm your shipping details</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Shipping Summary</h5>
+                </div>
+                <div class="card-body">
+                    <p>Your shipment is ready to be processed. After confirmation:</p>
+                    <ul>
+                        <li>Your box will be assigned to the selected driver and truck</li>
+                        <li>The status will be set to "Pending"</li>
+                        <li>You can track your shipment using the system</li>
+                    </ul>
+                    <p class="mb-0">Click "Finish" to complete this shipment or "Choose Another Box" to add more items.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -27,6 +27,22 @@ builder.Services.AddScoped<IDriversBusinessLogic, DriversBusinessLogic>();
 builder.Services.AddScoped<IDriverScheduleRepository, DriverScheduleRepository>();
 builder.Services.AddScoped<IDriverScheduleBusinessLogic, DriverScheduleBusinessLogic>();
 
+builder.Services.AddScoped<IRepository<Truck>, Repository<Truck>>();
+
+// Register box repositories and business logic
+builder.Services.AddScoped<IBoxRepository, BoxRepository>();
+builder.Services.AddScoped<IBoxBusinessLogic, BoxBusinessLogic>();
+builder.Services.AddScoped<IBoxSizeRepository, BoxSizeRepository>();
+builder.Services.AddScoped<IBoxSizeBusinessLogic, BoxSizeBusinessLogic>();
+
+// Add session services
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -43,6 +59,8 @@ app.UseRouting();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.UseSession();
 
 app.MapControllerRoute(
     name: "default",

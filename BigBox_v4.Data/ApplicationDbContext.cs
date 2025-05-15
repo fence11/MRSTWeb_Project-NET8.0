@@ -12,6 +12,9 @@ namespace BigBox_v4.Data
         }
         public DbSet<Drivers> Drivers { get; set; }
         public DbSet<DriverSchedule> DriverSchedules { get; set; }
+        public DbSet<Truck> Trucks { get; set; }
+        public DbSet<Box> Boxes { get; set; }
+        public DbSet<BoxSize> BoxSizes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
