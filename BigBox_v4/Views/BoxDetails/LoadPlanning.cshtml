@@ -1,0 +1,368 @@
+﻿@model BigBox_v4.Domain.Box
+
+@{
+    ViewData["Title"] = "Load Planning";
+    var truck = ViewBag.Truck as BigBox_v4.Domain.Truck;
+    var existingBoxes = ViewBag.ExistingBoxes as IEnumerable<BigBox_v4.Domain.Box>;
+    var loadPlanningResult = ViewBag.LoadPlanningResult as BigBox_v4.Controllers.LoadPlanningResult;
+}
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: 80%;" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100">Step 4 of 5</div>
+            </div>
+        </div>
+    </div>
+
+    <h1>Load Planning</h1>
+    <p class="lead">Review the load planning details for your shipment.</p>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Truck Loading Analysis</h5>
+                </div>
+                <div class="card-body">
+                    @if (loadPlanningResult.TruckIsFull)
+                    {
+                        <div class="alert alert-danger">
+                            <h5><i class="bi bi-exclamation-triangle"></i> Truck is Full</h5>
+                            <p>This truck cannot accommodate any more boxes with the current configuration.</p>
+                        </div>
+                    }
+                    else if (loadPlanningResult.WeightExceeded)
+                    {
+                        <div class="alert alert-danger">
+                            <h5><i class="bi bi-exclamation-triangle"></i> Weight Limit Exceeded</h5>
+                            <p>Adding this box would exceed the truck's maximum weight capacity.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-success">
+                            <h5><i class="bi bi-check-circle"></i> Box Can Be Loaded</h5>
+                            <p>This box can be safely loaded onto the truck.</p>
+                        </div>
+                    }
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Volume Analysis</h6>
+                            <div class="progress mb-3" style="height: 25px;">
+                                @{
+                                    var usedVolumePercentage = Math.Min(100, Math.Round((loadPlanningResult.ExistingBoxesVolume + loadPlanningResult.NewBoxVolume) / loadPlanningResult.TruckVolume * 100, 2));
+                                    var existingVolumePercentage = Math.Min(100, Math.Round(loadPlanningResult.ExistingBoxesVolume / loadPlanningResult.TruckVolume * 100, 2));
+                                    var newBoxVolumePercentage = Math.Min(100, Math.Round(loadPlanningResult.NewBoxVolume / loadPlanningResult.TruckVolume * 100, 2));
+                                }
+                                <div class="progress-bar bg-secondary" role="progressbar" style="width: @existingVolumePercentage%;"
+                                     aria-valuenow="@existingVolumePercentage" aria-valuemin="0" aria-valuemax="100">
+                                    @existingVolumePercentage%
+                                </div>
+                                <div class="progress-bar bg-primary" role="progressbar" style="width: @newBoxVolumePercentage%;"
+                                     aria-valuenow="@newBoxVolumePercentage" aria-valuemin="0" aria-valuemax="100">
+                                    @newBoxVolumePercentage%
+                                </div>
+                            </div>
+                            <dl class="row">
+                                <dt class="col-sm-7">Truck Volume:</dt>
+                                <dd class="col-sm-5">@loadPlanningResult.TruckVolume.ToString("N2") cm³</dd>
+
+                                <dt class="col-sm-7">Existing Boxes:</dt>
+                                <dd class="col-sm-5">@loadPlanningResult.ExistingBoxesVolume.ToString("N2") cm³</dd>
+
+                                <dt class="col-sm-7">This Box:</dt>
+                                <dd class="col-sm-5">@loadPlanningResult.NewBoxVolume.ToString("N2") cm³</dd>
+
+                                <dt class="col-sm-7">Remaining After:</dt>
+                                <dd class="col-sm-5">@((loadPlanningResult.RemainingVolume - loadPlanningResult.NewBoxVolume).ToString("N2")) cm³</dd>
+                            </dl>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Weight Analysis</h6>
+                            <div class="progress mb-3" style="height: 25px;">
+                                @{
+                                    var usedWeightPercentage = Math.Min(100, Math.Round((loadPlanningResult.ExistingBoxesWeight + loadPlanningResult.NewBoxWeight) / loadPlanningResult.TruckMaxWeight * 100, 2));
+                                    var existingWeightPercentage = Math.Min(100, Math.Round(loadPlanningResult.ExistingBoxesWeight / loadPlanningResult.TruckMaxWeight * 100, 2));
+                                    var newBoxWeightPercentage = Math.Min(100, Math.Round(loadPlanningResult.NewBoxWeight / loadPlanningResult.TruckMaxWeight * 100, 2));
+                                }
+                                <div class="progress-bar bg-secondary" role="progressbar" style="width: @existingWeightPercentage%;"
+                                     aria-valuenow="@existingWeightPercentage" aria-valuemin="0" aria-valuemax="100">
+                                    @existingWeightPercentage%
+                                </div>
+                                <div class="progress-bar bg-primary" role="progressbar" style="width: @newBoxWeightPercentage%;"
+                                     aria-valuenow="@newBoxWeightPercentage" aria-valuemin="0" aria-valuemax="100">
+                                    @newBoxWeightPercentage%
+                                </div>
+                            </div>
+                            <dl class="row">
+                                <dt class="col-sm-7">Truck Max Weight:</dt>
+                                <dd class="col-sm-5">@loadPlanningResult.TruckMaxWeight.ToString("N2") kg</dd>
+
+                                <dt class="col-sm-7">Existing Boxes:</dt>
+                                <dd class="col-sm-5">@loadPlanningResult.ExistingBoxesWeight.ToString("N2") kg</dd>
+
+                                <dt class="col-sm-7">This Box:</dt>
+                                <dd class="col-sm-5">@loadPlanningResult.NewBoxWeight.ToString("N2") kg</dd>
+
+                                <dt class="col-sm-7">Remaining After:</dt>
+                                <dd class="col-sm-5">@((loadPlanningResult.RemainingWeight - loadPlanningResult.NewBoxWeight).ToString("N2")) kg</dd>
+                            </dl>
+                        </div>
+                    </div>
+
+                    @if (loadPlanningResult.SpecialHandlingRequired)
+                    {
+                        <div class="mt-3">
+                            <h6>Special Handling Requirements</h6>
+                            <div class="alert alert-warning">
+                                <p><i class="bi bi-info-circle"></i> This box has special handling requirements that may affect how it can be loaded:</p>
+                                <ul class="mb-0">
+                                    @if (Model.ThisWayUp)
+                                    {
+                                        <li>This Way Up - Box must be oriented correctly</li>
+                                    }
+                                    @if (Model.Fragile)
+                                    {
+                                        <li>Fragile - Box must be handled with care and not have weight on top</li>
+                                    }
+                                    @if (Model.HandleWithCare)
+                                    {
+                                        <li>Handle With Care - Box requires careful handling</li>
+                                    }
+                                    @if (Model.KeepDry)
+                                    {
+                                        <li>Keep Dry - Box must be protected from moisture</li>
+                                    }
+                                    @if (Model.KeepUpright)
+                                    {
+                                        <li>Keep Upright - Box must remain in upright position</li>
+                                    }
+                                    @if (Model.Perishable)
+                                    {
+                                        <li>Perishable - Box contains perishable items</li>
+                                    }
+                                    @if (Model.DoNotStack)
+                                    {
+                                        <li>Do Not Stack - Nothing can be placed on top of this box</li>
+                                    }
+                                    @if (Model.Flammable)
+                                    {
+                                        <li>Flammable - Box contains flammable materials</li>
+                                    }
+                                    @if (Model.Explosive)
+                                    {
+                                        <li>Explosive - Box contains explosive materials</li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    }
+
+                    @if (loadPlanningResult.WillTriggerTransit)
+                    {
+                        <div class="mt-3">
+                            <div class="alert alert-info">
+                                <h5><i class="bi bi-truck"></i> Truck Will Begin Transit</h5>
+                                <p>Adding this box will bring the total to 10 or more boxes, which will trigger the truck to begin transit.</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Current Truck Status</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Truck Details</h6>
+                            <dl class="row">
+                                <dt class="col-sm-5">Brand:</dt>
+                                <dd class="col-sm-7">@truck.TruckBrand</dd>
+
+                                <dt class="col-sm-5">License Plate:</dt>
+                                <dd class="col-sm-7">@(string.IsNullOrEmpty(truck.LicensePlate) ? "N/A" : truck.LicensePlate)</dd>
+
+                                <dt class="col-sm-5">Status:</dt>
+                                <dd class="col-sm-7">
+                                    <span class="badge @(truck.TruckState == "Idle" ? "bg-success" : "bg-warning")">
+                                        @truck.TruckState
+                                    </span>
+                                </dd>
+
+                                <dt class="col-sm-5">Dimensions:</dt>
+                                <dd class="col-sm-7">
+                                    @truck.TowWidth?.ToString("F2") × @truck.TowHeight?.ToString("F2") × @truck.TowLength?.ToString("F2") cm
+                                </dd>
+
+                                <dt class="col-sm-5">Max Load:</dt>
+                                <dd class="col-sm-7">@truck.MaxLoadCapacity?.ToString("F2") kg</dd>
+                            </dl>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Current Load</h6>
+                            <p>Boxes currently loaded: <strong>@existingBoxes.Count()</strong></p>
+
+                            @if (existingBoxes.Any())
+                            {
+                                <div style="max-height: 200px; overflow-y: auto;">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Dimensions</th>
+                                                <th>Weight</th>
+                                                <th>Special</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var box in existingBoxes)
+                                            {
+                                                <tr>
+                                                    <td>@box.Width.ToString("F2") × @box.Height.ToString("F2") × @box.Length.ToString("F2") cm</td>
+                                                    <td>@box.Weight.ToString("F2") kg</td>
+                                                    <td>
+                                                        @if (box.Fragile)
+                                                        {
+                                                            <i class="bi bi-exclamation-triangle text-danger" title="Fragile"></i>
+                                                        }
+                                                        @if (box.DoNotStack)
+                                                        {
+                                                            <i class="bi bi-layers text-warning" title="Do Not Stack"></i>
+                                                        }
+                                                        @if (box.ThisWayUp)
+                                                        {
+                                                            <i class="bi bi-arrow-up-circle text-primary" title="This Way Up"></i>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="text-muted">No boxes currently loaded.</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <form asp-action="LoadPlanning" method="post">
+                <div class="d-flex justify-content-between">
+                    <a asp-action="SelectTruck" class="btn btn-secondary">Back</a>
+                    <div>
+                        @if (!loadPlanningResult.TruckIsFull && !loadPlanningResult.WeightExceeded)
+                        {
+                            <button type="submit" name="action" value="ConfirmLoad" class="btn btn-success">Confirm Load</button>
+                            <button type="submit" name="action" value="ChooseAnother" class="btn btn-primary">Load & Add Another Box</button>
+                        }
+                        else
+                        {
+                            <a asp-action="SelectTruck" class="btn btn-warning">Select Different Truck</a>
+                        }
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Shipping Process</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <strong>1. Enter Box Details</strong>
+                            <p class="small mb-0">Select box size and special handling instructions</p>
+                        </li>
+                        <li class="list-group-item">
+                            <strong>2. Select Driver</strong>
+                            <p class="small mb-0">Choose a driver based on their schedule</p>
+                        </li>
+                        <li class="list-group-item">
+                            <strong>3. Select Truck</strong>
+                            <p class="small mb-0">Choose an available truck</p>
+                        </li>
+                        <li class="list-group-item active">
+                            <strong>4. Load Planning</strong>
+                            <p class="small mb-0">Review load planning and capacity</p>
+                        </li>
+                        <li class="list-group-item text-muted">
+                            <strong>5. Confirm Details</strong>
+                            <p class="small mb-0">Review and confirm your shipping details</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5>Box Details</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-5">Dimensions:</dt>
+                        <dd class="col-sm-7">@Model.Width.ToString("F2") × @Model.Height.ToString("F2") × @Model.Length.ToString("F2") cm</dd>
+
+                        <dt class="col-sm-5">Weight:</dt>
+                        <dd class="col-sm-7">@Model.Weight.ToString("F2") kg</dd>
+
+                        @if (Model.Fragile || Model.HandleWithCare || Model.KeepDry || Model.ThisWayUp ||
+                        Model.KeepUpright || Model.Perishable || Model.DoNotStack ||
+                        Model.Flammable || Model.Explosive)
+                        {
+                            <dt class="col-sm-5">Instructions:</dt>
+                            <dd class="col-sm-7">
+                                <ul class="list-unstyled mb-0">
+                                    @if (Model.Fragile)
+                                    {
+                                        <li><small>Fragile</small></li>
+                                    }
+                                    @if (Model.HandleWithCare)
+                                    {
+                                        <li><small>Handle With Care</small></li>
+                                    }
+                                    @if (Model.KeepDry)
+                                    {
+                                        <li><small>Keep Dry</small></li>
+                                    }
+                                    @if (Model.ThisWayUp)
+                                    {
+                                        <li><small>This Way Up</small></li>
+                                    }
+                                    @if (Model.KeepUpright)
+                                    {
+                                        <li><small>Keep Upright</small></li>
+                                    }
+                                    @if (Model.Perishable)
+                                    {
+                                        <li><small>Perishable</small></li>
+                                    }
+                                    @if (Model.DoNotStack)
+                                    {
+                                        <li><small>Do Not Stack</small></li>
+                                    }
+                                    @if (Model.Flammable)
+                                    {
+                                        <li><small>Flammable</small></li>
+                                    }
+                                    @if (Model.Explosive)
+                                    {
+                                        <li><small>Explosive</small></li>
+                                    }
+                                </ul>
+                            </dd>
+                        }
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

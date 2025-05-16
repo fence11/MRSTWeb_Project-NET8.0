@@ -48,11 +48,11 @@
                                                     </p>
                                                     @if (truck.MaxLoadCapacity.HasValue)
                                                     {
-                                                        <p class="mb-1">Max Load: @truck.MaxLoadCapacity kg</p>
+                                                        <p class="mb-1">Max Load: @truck.MaxLoadCapacity.Value.ToString("F2") kg</p>
                                                     }
                                                     @if (truck.TowWidth.HasValue && truck.TowHeight.HasValue && truck.TowLength.HasValue)
                                                     {
-                                                        <p class="mb-1">Dimensions: @truck.TowWidth × @truck.TowHeight × @truck.TowLength</p>
+                                                        <p class="mb-1">Dimensions: @truck.TowWidth.Value.ToString("F2") × @truck.TowHeight.Value.ToString("F2") × @truck.TowLength.Value.ToString("F2")</p>
                                                     }
                                                 </div>
                                                 <div>

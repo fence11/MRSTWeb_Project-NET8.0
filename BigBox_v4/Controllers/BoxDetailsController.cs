@@ -3,6 +3,7 @@ using BigBox_v4.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -150,11 +151,11 @@ namespace BigBox_v4.Controllers
             // Update the box in session
             HttpContext.Session.SetString("CurrentBox", JsonSerializer.Serialize(box));
 
-            return RedirectToAction(nameof(Confirmation));
+            return RedirectToAction(nameof(LoadPlanning));
         }
 
-        // Step 4: Confirmation
-        public async Task<IActionResult> Confirmation()
+        // Step 4: Load Planning
+        public async Task<IActionResult> LoadPlanning()
         {
             // Get the box from session
             if (!HttpContext.Session.TryGetValue("CurrentBox", out var boxData))
@@ -164,23 +165,34 @@ namespace BigBox_v4.Controllers
 
             var box = JsonSerializer.Deserialize<Box>(boxData);
 
-            // Get the driver and truck details
-            if (box.DriverId.HasValue)
+            if (!box.TruckId.HasValue)
             {
-                ViewBag.Driver = await _driversBusinessLogic.GetItemByIdAsync(box.DriverId.Value);
+                return RedirectToAction(nameof(SelectTruck));
             }
 
-            if (box.TruckId.HasValue)
+            // Get the truck details
+            var truck = await _truckRepository.GetByIdAsync(box.TruckId.Value);
+            if (truck == null)
             {
-                ViewBag.Truck = await _truckRepository.GetByIdAsync(box.TruckId.Value);
+                return RedirectToAction(nameof(SelectTruck));
             }
+
+            // Get existing boxes for this truck
+            var existingBoxes = await _boxBusinessLogic.GetBoxesByTruckIdAsync(truck.TruckID);
+
+            // Calculate how many boxes can fit in the truck
+            var loadPlanningResult = CalculateLoadPlanning(box, truck, existingBoxes.ToList());
+
+            ViewBag.Truck = truck;
+            ViewBag.ExistingBoxes = existingBoxes;
+            ViewBag.LoadPlanningResult = loadPlanningResult;
 
             return View(box);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Confirmation(string action)
+        public async Task<IActionResult> LoadPlanning(string action)
         {
             // Get the box from session
             if (!HttpContext.Session.TryGetValue("CurrentBox", out var boxData))
@@ -190,23 +202,62 @@ namespace BigBox_v4.Controllers
 
             var box = JsonSerializer.Deserialize<Box>(boxData);
 
-            if (action == "Finish")
+            if (!box.TruckId.HasValue)
             {
+                return RedirectToAction(nameof(SelectTruck));
+            }
+
+            // Get the truck details
+            var truck = await _truckRepository.GetByIdAsync(box.TruckId.Value);
+            if (truck == null)
+            {
+                return RedirectToAction(nameof(SelectTruck));
+            }
+
+            if (action == "ConfirmLoad")
+            {
+                // Update truck status if needed
+                if (truck.TruckState == "Idle")
+                {
+                    truck.TruckState = "Loading";
+                    await _truckRepository.UpdateAsync(truck);
+                }
+
                 // Save the box to the database
-                box.Status = "Pending";
+                box.Status = "Loaded";
                 box.CreatedDate = DateTime.Now;
                 await _boxBusinessLogic.CreateItemAsync(box);
+
+                // Get existing boxes for this truck
+                var existingBoxes = await _boxBusinessLogic.GetBoxesByTruckIdAsync(truck.TruckID);
+
+                // If more than 10 boxes are loaded, change truck status to InTransit
+                if (existingBoxes.Count() >= 10)
+                {
+                    truck.TruckState = "InTransit";
+                    await _truckRepository.UpdateAsync(truck);
+
+                    // Set a flag in TempData to indicate the truck is now in transit
+                    TempData["TruckInTransit"] = true;
+                    TempData["TruckId"] = truck.TruckID;
+                }
 
                 // Clear the session
                 HttpContext.Session.Remove("CurrentBox");
 
-                // Redirect to the success page
-                return RedirectToAction(nameof(Success));
+                return RedirectToAction(nameof(Confirmation));
             }
             else if (action == "ChooseAnother")
             {
+                // Update truck status if needed
+                if (truck.TruckState == "Idle")
+                {
+                    truck.TruckState = "Loading";
+                    await _truckRepository.UpdateAsync(truck);
+                }
+
                 // Save the current box
-                box.Status = "Pending";
+                box.Status = "Loaded";
                 box.CreatedDate = DateTime.Now;
                 await _boxBusinessLogic.CreateItemAsync(box);
 
@@ -216,7 +267,21 @@ namespace BigBox_v4.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            return RedirectToAction(nameof(Confirmation));
+            return RedirectToAction(nameof(LoadPlanning));
+        }
+
+        // Step 5: Confirmation
+        public async Task<IActionResult> Confirmation()
+        {
+            // Check if a truck has just been set to InTransit
+            if (TempData.ContainsKey("TruckInTransit") && TempData.ContainsKey("TruckId"))
+            {
+                ViewBag.TruckInTransit = true;
+                int truckId = (int)TempData["TruckId"];
+                ViewBag.Truck = await _truckRepository.GetByIdAsync(truckId);
+            }
+
+            return View();
         }
 
         // Success page
@@ -224,5 +289,97 @@ namespace BigBox_v4.Controllers
         {
             return View();
         }
+
+        // Helper method to calculate load planning
+        private LoadPlanningResult CalculateLoadPlanning(Box newBox, Truck truck, List<Box> existingBoxes)
+        {
+            var result = new LoadPlanningResult();
+
+            // Calculate total volume of the truck
+            decimal truckVolume = truck.TowWidth.GetValueOrDefault() * truck.TowHeight.GetValueOrDefault() * truck.TowLength.GetValueOrDefault();
+            result.TruckVolume = truckVolume;
+
+            // Calculate volume of the new box
+            decimal newBoxVolume = newBox.Width * newBox.Height * newBox.Length;
+            result.NewBoxVolume = newBoxVolume;
+
+            // Calculate total volume of existing boxes
+            decimal existingBoxesVolume = 0;
+            decimal existingBoxesWeight = 0;
+
+            foreach (var box in existingBoxes)
+            {
+                existingBoxesVolume += box.Width * box.Height * box.Length;
+                existingBoxesWeight += box.Weight;
+            }
+
+            result.ExistingBoxesVolume = existingBoxesVolume;
+            result.ExistingBoxesWeight = existingBoxesWeight;
+
+            // Calculate remaining volume
+            result.RemainingVolume = truckVolume - existingBoxesVolume;
+
+            // Calculate how many more boxes like this one can fit
+            if (newBoxVolume > 0)
+            {
+                result.MaxAdditionalBoxes = Math.Floor(result.RemainingVolume / newBoxVolume);
+            }
+
+            // Check weight constraints
+            result.TruckMaxWeight = truck.MaxLoadCapacity.GetValueOrDefault();
+            result.NewBoxWeight = newBox.Weight;
+            result.RemainingWeight = result.TruckMaxWeight - existingBoxesWeight;
+
+            if (result.RemainingWeight < newBox.Weight)
+            {
+                result.WeightExceeded = true;
+                result.MaxAdditionalBoxes = 0;
+            }
+
+            // Check special handling requirements
+            result.SpecialHandlingRequired = newBox.ThisWayUp || newBox.Fragile || newBox.HandleWithCare ||
+                                            newBox.KeepDry || newBox.KeepUpright || newBox.Perishable ||
+                                            newBox.DoNotStack || newBox.Flammable || newBox.Explosive;
+
+            // Adjust max boxes based on special handling
+            if (newBox.DoNotStack || newBox.Fragile)
+            {
+                // If box can't be stacked, we need to consider floor space only
+                decimal floorArea = truck.TowWidth.GetValueOrDefault() * truck.TowLength.GetValueOrDefault();
+                decimal boxArea = newBox.Width * newBox.Length;
+                decimal remainingFloorArea = floorArea - (existingBoxesVolume / truck.TowHeight.GetValueOrDefault());
+
+                decimal maxBoxesByFloorArea = Math.Floor(remainingFloorArea / boxArea);
+                result.MaxAdditionalBoxes = Math.Min(result.MaxAdditionalBoxes, maxBoxesByFloorArea);
+            }
+
+            // Check if the truck is already full
+            result.TruckIsFull = result.MaxAdditionalBoxes <= 0;
+
+            // Check if this would be the 10th or more box
+            result.WillTriggerTransit = (existingBoxes.Count + 1) >= 10;
+
+            return result;
+        }
+    }
+
+    // Class to hold load planning calculation results
+    public class LoadPlanningResult
+    {
+        public decimal TruckVolume { get; set; }
+        public decimal NewBoxVolume { get; set; }
+        public decimal ExistingBoxesVolume { get; set; }
+        public decimal RemainingVolume { get; set; }
+        public decimal MaxAdditionalBoxes { get; set; }
+
+        public decimal TruckMaxWeight { get; set; }
+        public decimal NewBoxWeight { get; set; }
+        public decimal ExistingBoxesWeight { get; set; }
+        public decimal RemainingWeight { get; set; }
+        public bool WeightExceeded { get; set; }
+
+        public bool SpecialHandlingRequired { get; set; }
+        public bool TruckIsFull { get; set; }
+        public bool WillTriggerTransit { get; set; }
     }
 }
