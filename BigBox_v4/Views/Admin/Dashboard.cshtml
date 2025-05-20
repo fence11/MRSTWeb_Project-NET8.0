@@ -1,0 +1,38 @@
+﻿@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div class="container">
+    <div class="row">
+        <!-- Manage Users -->
+        <div class="col-md-6">
+            <div class="card p-3 mb-4 shadow-sm">
+                <h4>Manage Users</h4>
+                <p>View and manage registered user accounts.</p>
+                <a href="/Users" class="btn btn-primary">Go to Users</a>
+            </div>
+        </div>
+
+        <!-- Manage Drivers -->
+        <div class="col-md-6">
+            <div class="card p-3 mb-4 shadow-sm">
+                <h4>Manage Drivers</h4>
+                <p>View and manage all registered drivers.</p>
+                <a href="/Drivers" class="btn btn-primary">Go to Drivers</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- System Logs (Placeholder) -->
+        <div class="col-md-6">
+            <div class="card p-3 mb-4 shadow-sm">
+                <h4>System Logs</h4>
+                <p>Monitor logs and application events (coming soon).</p>
+                <a href="#" class="btn btn-secondary disabled">Coming Soon</a>
+            </div>
+        </div>
+    </div>
+</div>
