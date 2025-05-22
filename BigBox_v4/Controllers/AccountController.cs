@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using BigBox_v4.Domain;
 using BigBox_v4.Data;
@@ -11,10 +12,12 @@ namespace BigBox_v4.Controllers
     public class AccountController : Controller
     {
         private readonly ApplicationDBContext _context;
+        private readonly PasswordHasher<User> _passwordHasher;
 
         public AccountController(ApplicationDBContext context)
         {
             _context = context;
+            _passwordHasher = new PasswordHasher<User>();
         }
 
         [HttpGet]
@@ -23,9 +26,17 @@ namespace BigBox_v4.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(string username, string password)
         {
-            var user = _context.Users.FirstOrDefault(u => u.Username == username && u.PasswordHash == password);
+            var user = _context.Users.FirstOrDefault(u => u.Username == username);
 
             if (user == null)
+            {
+                ModelState.AddModelError("", "Invalid username or password.");
+                return View();
+            }
+
+            var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
+
+            if (result == PasswordVerificationResult.Failed)
             {
                 ModelState.AddModelError("", "Invalid username or password.");
                 return View();
@@ -60,6 +71,8 @@ namespace BigBox_v4.Controllers
                 ModelState.AddModelError("Username", "Username already exists.");
                 return View(model);
             }
+
+            model.PasswordHash = _passwordHasher.HashPassword(model, model.PasswordHash);
 
             _context.Users.Add(model);
             await _context.SaveChangesAsync();
