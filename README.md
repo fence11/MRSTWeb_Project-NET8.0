@@ -8,21 +8,21 @@ Works basically like this:
 
 Pages: [16/15]
 - [] index
-- [] main application (box fitting in trucks etc.)
+- [X] main application (box fitting in trucks etc.)
 - [] box details
-- [] ** choose driver (can be on sepparate page, where truck is shown based on user choice)
+- [X] ** choose driver (can be on sepparate page, where truck is shown based on user choice)
 - [] look at box positions (shown all boxes in truck like this [https://www.optioryx.com/cartonization]) (maybe click and drag boxes manually, idk)
-- [] ** maybe click on box to show box details (instructions, weight, dimensions, etc.)
-- [] login
-- [] register
+- [X] ** maybe click on box to show box details (instructions, weight, dimensions, etc.)
+- [X] login
+- [X] register
 - [] user profile
 - [] about / contacts
 - [] report an issue (damaged goods, delay, missing items)
 - [] progress report (delays, how long until path is completed)
-- [] driver timetable page (all drivers are visible here) (what drivers are available, what are their schedules, what driver should the box be issued to)
-- [] add driver to db (driver details, truck details)
+- [X] driver timetable page (all drivers are visible here) (what drivers are available, what are their schedules, what driver should the box be issued to)
+- [X] add driver to db (driver details, truck details)
 - [] notifications ?
-- [] admin page ? 
+- [X] admin page  
 
 Page layout:
 Index:
