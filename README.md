@@ -7,22 +7,22 @@ Works basically like this:
 **register OR login --> go to main app page --> add box details (weight, dimensions, additional instructions [this way up, fragile, handle with care, keep dry, keep upright, perishable, do not stack, flammable, explosive, do not open before date]) --> choose time period of delivery --> choose driver / truck (out of the list that are working during delivery time period) --> ** can check progress in `progress report` page
 
 Pages: [16/15]
-- [] index
-- [X] main application (box fitting in trucks etc.)
-- [] box details
-- [X] ** choose driver (can be on sepparate page, where truck is shown based on user choice)
-- [] look at box positions (shown all boxes in truck like this [https://www.optioryx.com/cartonization]) (maybe click and drag boxes manually, idk)
-- [X] ** maybe click on box to show box details (instructions, weight, dimensions, etc.)
-- [X] login
-- [X] register
-- [] user profile
-- [] about / contacts
-- [] report an issue (damaged goods, delay, missing items)
-- [] progress report (delays, how long until path is completed)
-- [X] driver timetable page (all drivers are visible here) (what drivers are available, what are their schedules, what driver should the box be issued to)
-- [X] add driver to db (driver details, truck details)
-- [] notifications ?
-- [X] admin page  
+[] index
+[X] main application (box fitting in trucks etc.)
+[] box details
+[X] ** choose driver (can be on sepparate page, where truck is shown based on user choice)
+[] look at box positions (shown all boxes in truck like this [https://www.optioryx.com/cartonization]) (maybe click and drag boxes manually, idk)
+[X] ** maybe click on box to show box details (instructions, weight, dimensions, etc.)
+[X] login
+[X] register
+[] user profile
+[] about / contacts
+[] report an issue (damaged goods, delay, missing items)
+[] progress report (delays, how long until path is completed)
+[X] driver timetable page (all drivers are visible here) (what drivers are available, what are their schedules, what driver should the box be issued to)
+[X] add driver to db (driver details, truck details)
+[] notifications ?
+[X] admin page  
 
 Page layout:
 Index:
