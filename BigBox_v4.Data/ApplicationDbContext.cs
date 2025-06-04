@@ -1,4 +1,4 @@
-﻿using BigBox_v4.Domain;
+using BigBox_v4.Domain;
 using BigBox_v4.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,11 +10,14 @@ namespace BigBox_v4.Data
             : base(options)
         {
         }
+
         public DbSet<Drivers> Drivers { get; set; }
         public DbSet<DriverSchedule> DriverSchedules { get; set; }
         public DbSet<Truck> Trucks { get; set; }
         public DbSet<Box> Boxes { get; set; }
         public DbSet<BoxSize> BoxSizes { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<WebSession> WebSessions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -36,9 +39,17 @@ namespace BigBox_v4.Data
                       .HasForeignKey(e => e.DriverId)
                       .OnDelete(DeleteBehavior.Cascade);
             });
+
+            modelBuilder.Entity<WebSession>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.SessionHash).IsRequired().HasMaxLength(64);
+                entity.Property(e => e.ExpiresAt).IsRequired();
+                entity.HasOne(e => e.User)
+                      .WithMany()
+                      .HasForeignKey(e => e.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
         }
-    public DbSet<User> Users { get; set; }
-
     }
-
 }

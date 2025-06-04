@@ -1,4 +1,6 @@
 ﻿@{
+    var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
+    var username = User.Identity?.Name ?? string.Empty;
     var isAdmin = User.HasClaim("IsAdmin", "True");
 }
 
@@ -30,13 +32,17 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
 
+                        @if (isAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="DriverSchedule" asp-action="Index">Schedules</a>
+                            </li>
+                        }
+
                         @if (isAdmin)
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="Drivers" asp-action="Index">Drivers</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="DriverSchedule" asp-action="Index">Schedules</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="BoxDetails" asp-action="Index">Ship a Box</a>
@@ -48,10 +54,22 @@
 
                     </ul>
 
-                    <div class="d-flex">
-                        <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary me-2">Sign In</a>
-                        <a asp-controller="Account" asp-action="Register" class="btn btn-primary">Register</a>
-                    </div>
+                    @if (!isAuthenticated)
+                    {
+                        <div class="d-flex">
+                            <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary me-2">Sign In</a>
+                            <a asp-controller="Account" asp-action="Register" class="btn btn-primary">Register</a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-flex align-items-center">
+                            <span class="me-3">Hello, @username!</span>
+                            <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                                <button type="submit" class="btn btn-outline-secondary">Logout</button>
+                            </form>
+                        </div>
+                    }
                 </div>
             </div>
         </nav>

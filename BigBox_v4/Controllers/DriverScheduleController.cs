@@ -2,12 +2,14 @@
 using BigBox_v4.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace BigBox_v4.Controllers
 {
+    [Microsoft.AspNetCore.Authorization.Authorize]
     public class DriverScheduleController : Controller
     {
         private readonly IDriverScheduleBusinessLogic _scheduleBusinessLogic;
