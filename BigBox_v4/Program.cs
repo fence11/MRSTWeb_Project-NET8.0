@@ -72,26 +72,30 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<ApplicationDBContext>();
+     var db = scope.ServiceProvider.GetRequiredService<ApplicationDBContext>();
 
-    // Apply any pending migrations
-    db.Database.Migrate();
+     // Apply any pending migrations
+     db.Database.Migrate();
 
-    // Check if an admin user already exists
-    if (!db.Users.Any(u => u.IsAdmin))
-    {
-        db.Users.Add(new User
-        {
-            Username = "admin",
-            FirstName = "Admin",
-            LastName = "User",
-            Email = "admin@bigbox.com",
-            PasswordHash = "admin123",
-            IsAdmin = true
-        });
+     // Only add admin if not already present
+     if (!db.Users.Any(u => u.IsAdmin))
+     {
+          var adminUser = new User
+          {
+               Username = "admin",
+               FirstName = "Admin",
+               LastName = "User",
+               Email = "admin@bigbox.com",
+               IsAdmin = true
+          };
 
-        db.SaveChanges();
-    }
+          // Manually create a hasher and hash the password
+          var hasher = new Microsoft.AspNetCore.Identity.PasswordHasher<User>();
+          adminUser.PasswordHash = hasher.HashPassword(adminUser, "admin123");
+
+          db.Users.Add(adminUser);
+          db.SaveChanges();
+     }
 }
 
 
