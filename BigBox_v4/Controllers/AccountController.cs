@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using System;
 using BigBox_v4.Domain;
 using BigBox_v4.Data;
+using BigBox_v4;
 
 namespace BigBox_v4.Controllers
 {
@@ -13,10 +15,12 @@ namespace BigBox_v4.Controllers
     {
         private readonly ApplicationDBContext _context;
         private readonly PasswordHasher<User> _passwordHasher;
+        private readonly IWebSessionRepository _sessionRepo;
 
-        public AccountController(ApplicationDBContext context)
+        public AccountController(ApplicationDBContext context, IWebSessionRepository sessionRepo)
         {
             _context = context;
+            _sessionRepo = sessionRepo;
             _passwordHasher = new PasswordHasher<User>();
         }
 
@@ -42,16 +46,35 @@ namespace BigBox_v4.Controllers
                 return View();
             }
 
+            await _sessionRepo.RemoveUserSessionsAsync(user.Id);
+
+            var sessionId = Guid.NewGuid().ToString();
+            var sessionHash = SecurityHelpers.Hash(sessionId);
+            await _sessionRepo.AddAsync(new WebSession
+            {
+                UserId = user.Id,
+                SessionHash = sessionHash,
+                ExpiresAt = DateTime.UtcNow.AddHours(1)
+            });
+
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.Username),
                 new Claim(ClaimTypes.Email, user.Email),
+                new Claim("IsAdmin", user.IsAdmin.ToString())
             };
 
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var principal = new ClaimsPrincipal(identity);
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+            Response.Cookies.Append("WebSession", sessionId, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                Expires = DateTimeOffset.UtcNow.AddHours(1)
+            });
 
             return RedirectToAction("Index", "Home");
         }
@@ -84,6 +107,13 @@ namespace BigBox_v4.Controllers
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
+            if (Request.Cookies.TryGetValue("WebSession", out var sessionId))
+            {
+                var hash = SecurityHelpers.Hash(sessionId);
+                await _sessionRepo.RemoveByHashAsync(hash);
+                Response.Cookies.Delete("WebSession");
+            }
+
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Login");
         }
