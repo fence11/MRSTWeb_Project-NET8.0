@@ -1,0 +1,29 @@
+@model BigBox_v4.Domain.User
+
+@{
+    ViewData["Title"] = "Your Profile";
+}
+
+<h2 class="mt-4">Profile Information</h2>
+
+<div class="card mt-3 shadow-sm">
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Username</dt>
+            <dd class="col-sm-9">@Model.Username</dd>
+
+            <dt class="col-sm-3">First Name</dt>
+            <dd class="col-sm-9">@Model.FirstName</dd>
+
+            <dt class="col-sm-3">Last Name</dt>
+            <dd class="col-sm-9">@Model.LastName</dd>
+
+            <dt class="col-sm-3">Email</dt>
+            <dd class="col-sm-9">@Model.Email</dd>
+
+            <dt class="col-sm-3">Role</dt>
+            <dd class="col-sm-9">@((Model.IsAdmin ? "Administrator" : "User"))</dd>
+        </dl>
+        <a asp-controller="Account" asp-action="Logout" class="btn btn-outline-danger mt-3">Logout</a>
+    </div>
+</div>
