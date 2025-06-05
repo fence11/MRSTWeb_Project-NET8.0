@@ -54,20 +54,19 @@
 
                     </ul>
 
-                    @if (!isAuthenticated)
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
                     {
-                        <div class="d-flex">
-                            <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary me-2">Sign In</a>
-                            <a asp-controller="Account" asp-action="Register" class="btn btn-primary">Register</a>
+                        <div class="d-flex align-items-center">
+                            <span class="me-2">Hello, @User.Identity.Name</span>
+                            <a asp-controller="Account" asp-action="Logout" class="btn btn-outline-danger">Logout</a>
+                            <i class="bi bi-person-circle fs-4 ms-3 text-primary"></i>
                         </div>
                     }
                     else
                     {
-                        <div class="d-flex align-items-center">
-                            <span class="me-3">Hello, @username!</span>
-                            <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
-                                <button type="submit" class="btn btn-outline-secondary">Logout</button>
-                            </form>
+                        <div class="d-flex">
+                            <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary me-2">Sign In</a>
+                            <a asp-controller="Account" asp-action="Register" class="btn btn-primary">Register</a>
                         </div>
                     }
                 </div>

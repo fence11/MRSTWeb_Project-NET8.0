@@ -2,27 +2,42 @@
     ViewData["Title"] = "Login";
 }
 
-<h2>Login</h2>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow rounded">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">Login</h2>
 
-<form asp-action="Login" method="post">
-    <div>
-        <label for="username">Username</label>
-        <input type="text" name="username" />
+                    <form method="post">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" name="username" class="form-control" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" name="password" class="form-control" required />
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Sign in</button>
+                        </div>
+
+                        <div class="mt-3 text-center">
+                            <span>Don't have an account?</span>
+                            <a asp-action="Register">Register</a>
+                        </div>
+                    </form>
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger mt-3">
+                            @Html.ValidationSummary()
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
     </div>
-    <div>
-        <label for="password">Password</label>
-        <input type="password" name="password" />
-    </div>
-    <button type="submit">Login</button>
-</form>
-
-@if (!ViewData.ModelState.IsValid)
-{
-    <div style="color:red">Invalid username or password.</div>
-}
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}
+</div>
