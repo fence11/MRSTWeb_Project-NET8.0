@@ -58,7 +58,9 @@
                     {
                         <div class="d-flex align-items-center">
                             <span class="me-2">Hello, @User.Identity.Name</span>
-                            <a asp-controller="Account" asp-action="Logout" class="btn btn-outline-danger">Logout</a>
+                            <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-outline-danger">Logout</button>
+                            </form>
                             <i class="bi bi-person-circle fs-4 ms-3 text-primary"></i>
                         </div>
                     }
