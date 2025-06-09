@@ -36,8 +36,9 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Password</label>
-                            <input name="Password" type="password" class="form-control" required />
+                            <label asp-for="PasswordHash" class="form-label"></label>
+                            <input asp-for="PasswordHash" type="password" class="form-control" />
+                            <span asp-validation-for="PasswordHash" class="text-danger"></span>
                         </div>
 
                         <div class="d-grid">
