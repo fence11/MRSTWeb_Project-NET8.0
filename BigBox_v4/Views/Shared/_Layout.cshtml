@@ -1,4 +1,4 @@
-﻿@{
+@{
     var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
     var username = User.Identity?.Name ?? string.Empty;
     var isAdmin = User.HasClaim("IsAdmin", "True");
@@ -27,7 +27,6 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
@@ -51,17 +50,25 @@
                                 <a class="nav-link text-dark" asp-controller="Admin" asp-action="Dashboard">Admin Panel</a>
                             </li>
                         }
-
                     </ul>
 
-                    @if (User.Identity != null && User.Identity.IsAuthenticated)
+                    @if (isAuthenticated)
                     {
-                        <div class="d-flex align-items-center">
-                            <span class="me-2">Hello, @User.Identity.Name</span>
-                            <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-                                <button type="submit" class="btn btn-outline-danger">Logout</button>
-                            </form>
-                            <i class="bi bi-person-circle fs-4 ms-3 text-primary"></i>
+                        <div class="dropdown">
+                            <a class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle" href="#" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle fs-4 me-2"></i>
+                                @username
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Account" asp-action="Profile">View Profile</a>
+                                </li>
+                                <li>
+                                    <form method="post" asp-controller="Account" asp-action="Logout" class="dropdown-item p-0">
+                                        <button type="submit" class="btn btn-link dropdown-item">Logout</button>
+                                    </form>
+                                </li>
+                            </ul>
                         </div>
                     }
                     else
@@ -75,6 +82,7 @@
             </div>
         </nav>
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -86,6 +94,7 @@
             &copy; 2023 - BigBox Shipping - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

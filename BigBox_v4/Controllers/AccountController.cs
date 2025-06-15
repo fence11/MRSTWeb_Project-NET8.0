@@ -117,5 +117,20 @@ namespace BigBox_v4.Controllers
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Login");
         }
+
+        [Authorize]
+        [HttpGet]
+        public IActionResult Profile()
+        {
+            var username = User.Identity?.Name;
+            if (string.IsNullOrEmpty(username))
+                return RedirectToAction("Login");
+
+            var user = _context.Users.FirstOrDefault(u => u.Username == username);
+            if (user == null)
+                return RedirectToAction("Login");
+
+            return View(user);
+        }
     }
 }
