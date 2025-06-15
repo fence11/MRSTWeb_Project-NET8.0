@@ -1,4 +1,4 @@
-﻿@{
+@{
     var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
     var username = User.Identity?.Name ?? string.Empty;
     var isAdmin = User.HasClaim("IsAdmin", "True");
