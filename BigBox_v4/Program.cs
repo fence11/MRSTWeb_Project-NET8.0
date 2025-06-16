@@ -3,10 +3,18 @@ using BigBox_v4.Data;
 using BigBox_v4.Domain;
 using BigBox_v4.Middleware;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    var policy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+    options.Filters.Add(new AuthorizeFilter(policy));
+});
 
 builder.Services.AddAuthentication("Cookies")
     .AddCookie("Cookies", options =>

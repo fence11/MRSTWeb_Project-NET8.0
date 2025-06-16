@@ -8,9 +8,12 @@
 
 <div class="container">
     <h1>Timetable for @driver.Name</h1>
-    <p>
-        <a asp-action="Create" asp-route-driverId="@driver.Id" asp-route-returnToDriver="true" class="btn btn-success">Add Schedule</a>
-    </p>
+    @if (User.HasClaim("IsAdmin", "True"))
+    {
+        <p>
+            <a asp-action="Create" asp-route-driverId="@driver.Id" asp-route-returnToDriver="true" class="btn btn-success">Add Schedule</a>
+        </p>
+    }
 
     <div class="row mb-3">
         <div class="col">
@@ -77,10 +80,13 @@
                                                 <td>@schedule.Status</td>
                                                 <td>@(string.IsNullOrEmpty(schedule.Notes) ? "N/A" : schedule.Notes)</td>
                                                 <td>
-                                                    <div class="btn-group" role="group">
-                                                        <a asp-action="Edit" asp-route-id="@schedule.Id" asp-route-returnToDriver="true" class="btn btn-primary btn-sm">Edit</a>
-                                                        <a asp-action="Delete" asp-route-id="@schedule.Id" asp-route-returnToDriver="true" class="btn btn-danger btn-sm">Delete</a>
-                                                    </div>
+                                                    @if (User.HasClaim("IsAdmin", "True"))
+                                                    {
+                                                        <div class="btn-group" role="group">
+                                                            <a asp-action="Edit" asp-route-id="@schedule.Id" asp-route-returnToDriver="true" class="btn btn-primary btn-sm">Edit</a>
+                                                            <a asp-action="Delete" asp-route-id="@schedule.Id" asp-route-returnToDriver="true" class="btn btn-danger btn-sm">Delete</a>
+                                                        </div>
+                                                    }
                                                 </td>
                                             </tr>
                                         }

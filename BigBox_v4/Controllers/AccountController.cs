@@ -24,9 +24,11 @@ namespace BigBox_v4.Controllers
             _passwordHasher = new PasswordHasher<User>();
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public IActionResult Login() => View();
 
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Login(string username, string password)
         {
@@ -79,9 +81,11 @@ namespace BigBox_v4.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public IActionResult Register() => View();
 
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Register(User model)
         {
