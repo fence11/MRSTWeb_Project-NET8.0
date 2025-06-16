@@ -48,6 +48,7 @@ namespace BigBox_v4.Controllers
         // GET: DriverSchedule/Create
         public async Task<IActionResult> Create(int? driverId)
         {
+            if (!UserIsAdmin()) return Forbid();
             await PopulateDriversDropdown();
 
             var schedule = new DriverSchedule
@@ -70,6 +71,7 @@ namespace BigBox_v4.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(DriverSchedule schedule)
         {
+            if (!UserIsAdmin()) return Forbid();
             if (ModelState.IsValid)
             {
                 try
@@ -96,6 +98,7 @@ namespace BigBox_v4.Controllers
         // GET: DriverSchedule/Edit/ID
         public async Task<IActionResult> Edit(int id)
         {
+            if (!UserIsAdmin()) return Forbid();
             var schedule = await _scheduleBusinessLogic.GetItemByIdAsync(id);
             if (schedule == null)
             {
@@ -111,6 +114,7 @@ namespace BigBox_v4.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, DriverSchedule schedule)
         {
+            if (!UserIsAdmin()) return Forbid();
             if (id != schedule.Id)
             {
                 return NotFound();
@@ -142,6 +146,7 @@ namespace BigBox_v4.Controllers
         // GET: DriverSchedule/Delete/ID
         public async Task<IActionResult> Delete(int id)
         {
+            if (!UserIsAdmin()) return Forbid();
             var schedule = await _scheduleBusinessLogic.GetItemByIdAsync(id);
             if (schedule == null)
             {
@@ -156,6 +161,7 @@ namespace BigBox_v4.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            if (!UserIsAdmin()) return Forbid();
             var schedule = await _scheduleBusinessLogic.GetItemByIdAsync(id);
             int driverId = schedule.DriverId;
 
@@ -173,6 +179,11 @@ namespace BigBox_v4.Controllers
         {
             var drivers = await _driversBusinessLogic.GetAllItemsAsync();
             ViewBag.Drivers = new SelectList(drivers, "Id", "Name");
+        }
+
+        private bool UserIsAdmin()
+        {
+            return User.HasClaim("IsAdmin", "True");
         }
     }
 }

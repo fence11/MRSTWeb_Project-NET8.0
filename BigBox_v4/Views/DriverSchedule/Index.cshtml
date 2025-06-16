@@ -7,9 +7,12 @@
 
 <div class="container">
     <h1>Driver Schedules</h1>
-    <p>
-        <a asp-action="Create" class="btn btn-success">Create New Schedule</a>
-    </p>
+    @if (User.HasClaim("IsAdmin", "True"))
+    {
+        <p>
+            <a asp-action="Create" class="btn btn-success">Create New Schedule</a>
+        </p>
+    }
 
     @* https://localhost:7064/DriverSchedule/DriverTimetable/1 *@
 
@@ -59,10 +62,13 @@
                                                 <td>@schedule.Duration.ToString(@"hh\:mm")</td>
                                                 <td>@schedule.Status</td>
                                                 <td>
-                                                    <div class="btn-group" role="group">
-                                                        <a asp-action="Edit" asp-route-id="@schedule.Id" class="btn btn-primary btn-sm">Edit</a>
-                                                        <a asp-action="Delete" asp-route-id="@schedule.Id" class="btn btn-danger btn-sm">Delete</a>
-                                                    </div>
+                                                    @if (User.HasClaim("IsAdmin", "True"))
+                                                    {
+                                                        <div class="btn-group" role="group">
+                                                            <a asp-action="Edit" asp-route-id="@schedule.Id" class="btn btn-primary btn-sm">Edit</a>
+                                                            <a asp-action="Delete" asp-route-id="@schedule.Id" class="btn btn-danger btn-sm">Delete</a>
+                                                        </div>
+                                                    }
                                                 </td>
                                             </tr>
                                         }
