@@ -284,13 +284,11 @@ namespace BigBox_v4.Controllers
             return View();
         }
 
-        // Success page
         public IActionResult Success()
         {
             return View();
         }
 
-        // Helper method to calculate load planning
         private LoadPlanningResult CalculateLoadPlanning(Box newBox, Truck truck, List<Box> existingBoxes)
         {
             var result = new LoadPlanningResult();
@@ -319,13 +317,13 @@ namespace BigBox_v4.Controllers
             // Calculate remaining volume
             result.RemainingVolume = truckVolume - existingBoxesVolume;
 
-            // Calculate how many more boxes like this one can fit
+            // Calculate how many more boxes like the current one can fit
             if (newBoxVolume > 0)
             {
                 result.MaxAdditionalBoxes = Math.Floor(result.RemainingVolume / newBoxVolume);
             }
 
-            // Check weight constraints
+            // Check weight
             result.TruckMaxWeight = truck.MaxLoadCapacity.GetValueOrDefault();
             result.NewBoxWeight = newBox.Weight;
             result.RemainingWeight = result.TruckMaxWeight - existingBoxesWeight;
@@ -341,10 +339,9 @@ namespace BigBox_v4.Controllers
                                             newBox.KeepDry || newBox.KeepUpright || newBox.Perishable ||
                                             newBox.DoNotStack || newBox.Flammable || newBox.Explosive;
 
-            // Adjust max boxes based on special handling
             if (newBox.DoNotStack || newBox.Fragile)
             {
-                // If box can't be stacked, we need to consider floor space only
+                // If box can't be stacked, consider floor space only
                 decimal floorArea = truck.TowWidth.GetValueOrDefault() * truck.TowLength.GetValueOrDefault();
                 decimal boxArea = newBox.Width * newBox.Length;
                 decimal remainingFloorArea = floorArea - (existingBoxesVolume / truck.TowHeight.GetValueOrDefault());
@@ -363,7 +360,7 @@ namespace BigBox_v4.Controllers
         }
     }
 
-    // Class to hold load planning calculation results
+    // Hold load planning calculation results
     public class LoadPlanningResult
     {
         public decimal TruckVolume { get; set; }

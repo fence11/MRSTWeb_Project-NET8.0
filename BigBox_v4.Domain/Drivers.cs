@@ -19,10 +19,6 @@ namespace BigBox_v4.Models
         [Required]
         public DateTime EmploymentDate { get; set; }
 
-        //public Drivers()
-        //{
-        //    EmploymentDate = DateTime.Now;
-        //}
     }
 }
 
